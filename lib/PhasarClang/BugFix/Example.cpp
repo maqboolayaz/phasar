@@ -15,6 +15,6 @@ using namespace psr;
 
 namespace psr {
 
-void helloBugFix() { std::cout << "Hello, BugFix!\n"; }
+void helloBugFix() { std::cout << "Testing the fork, Hello, BugFix!\n"; }
 
 } // namespace psr
