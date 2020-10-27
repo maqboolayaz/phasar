@@ -8,7 +8,7 @@
 // by the Clang parser.
 class PhasarASTConsumer : public clang::ASTConsumer {
 public:
-  PhasarASTConsumer(clang::Rewriter &R) : Visitor(R) {}
+  PhasarASTConsumer(clang::Rewriter &R, std::string fix_statement) : Visitor(R, fix_statement) {}
 
   void HandleTranslationUnit(clang::ASTContext &Context) override {
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());

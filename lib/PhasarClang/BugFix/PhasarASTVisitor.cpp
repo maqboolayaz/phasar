@@ -21,7 +21,7 @@
 // we're interested in by overriding relevant methods.
 class PhasarASTVisitor : public clang::RecursiveASTVisitor<PhasarASTVisitor> {
 public:
-  PhasarASTVisitor(clang::Rewriter &R) : TheRewriter(R) {}
+  PhasarASTVisitor(clang::Rewriter &R, std::string fix_statement) : TheRewriter(R), _fix_statement(fix_statement) {}
 
   bool VisitStmt(clang::Stmt *S) {
     // Only care about If statements.
@@ -41,7 +41,8 @@ public:
       range.setBegin(S->getBeginLoc());
       range.setEnd(S->getEndLoc());
 
-      TheRewriter.ReplaceText(S->getSourceRange() , "int x = 1;");
+      std::cout << "fix_statement :" << _fix_statement <<std::endl;
+      TheRewriter.ReplaceText(S->getSourceRange() , _fix_statement);
     }
 
 
@@ -93,4 +94,5 @@ public:
 
 private:
   clang::Rewriter &TheRewriter;
+  std::string _fix_statement;
 };

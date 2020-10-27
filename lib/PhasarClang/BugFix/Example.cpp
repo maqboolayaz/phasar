@@ -9,9 +9,10 @@
 
 #include <iostream>
 
-#include "phasar/PhasarClang/BugFix/Example.h"
+//#include "phasar/PhasarClang/BugFix/Example.h"
+//#include <BugFix/Example.h>
 
-using namespace psr;
+//using namespace psr;
 
 namespace psr {
 
