@@ -12,39 +12,43 @@
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
-
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/raw_ostream.h"
+#include "BugFix.h"
 
 
 // By implementing RecursiveASTVisitor, we can specify which AST nodes
 // we're interested in by overriding relevant methods.
 class PhasarASTVisitor : public clang::RecursiveASTVisitor<PhasarASTVisitor> {
 public:
-  PhasarASTVisitor(clang::Rewriter &R, std::string fix_statement) : TheRewriter(R), _fix_statement(fix_statement) {}
+  PhasarASTVisitor(clang::Rewriter &R, BugFix bugFix) : TheRewriter(R), _bugFix(bugFix) {}
 
   bool VisitStmt(clang::Stmt *S) {
     // Only care about If statements.
-    // std::cout << "Hello"<<std::endl;
-    // clang::Stmt::StmtClass test = S->getStmtClass();
-    // std::cout << test <<std::endl;
-
     std::string statement;
     llvm::raw_string_ostream stream(statement);
     S->printPretty(stream, NULL, clang::PrintingPolicy(clang::LangOptions()));
     stream.flush();
-    std::cout << "Statement :" << statement <<std::endl;
+    //std::cout << "Statement :" << statement <<std::endl;
 
-    if(statement.find("int x = 42;") == 0){
-      std::cout << "Hello"<<std::endl;
-      clang::CharSourceRange range;
-      range.setBegin(S->getBeginLoc());
-      range.setEnd(S->getEndLoc());
-
-      std::cout << "fix_statement :" << _fix_statement <<std::endl;
-      TheRewriter.ReplaceText(S->getSourceRange() , _fix_statement);
+    switch (_bugFix.fix_operation) {
+        case OPERATION::MODIFY: 
+          if(statement.find(_bugFix.error_statement) == 0){
+            TheRewriter.ReplaceText(S->getSourceRange() , _bugFix.fix_statement);
+          }
+        break;
+        case OPERATION::ADD:
+          if(statement.find(_bugFix.error_statement) == 0){
+            TheRewriter.InsertTextAfter(S->getEndLoc().getLocWithOffset(1), _bugFix.fix_statement);
+            //TheRewriter.InsertText(S->getBeginLoc(), _bugFix.fix_statement, true, true);
+          }
+        break;
+        case OPERATION::DELETE:
+            if(statement.find(_bugFix.error_statement) == 0){
+              TheRewriter.RemoveText(S->getSourceRange());
+            }
+        break;
     }
-
 
     if (clang::isa<clang::IfStmt>(S)) {
       clang::IfStmt *IfStatement = clang::cast<clang::IfStmt>(S);
@@ -94,5 +98,5 @@ public:
 
 private:
   clang::Rewriter &TheRewriter;
-  std::string _fix_statement;
+  BugFix _bugFix;
 };
