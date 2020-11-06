@@ -4,11 +4,14 @@
 #include "PhasarFrontendAction.cpp"
 #include "clang/AST/ASTConsumer.h"
 #include "BugFix.h"
+#include "Example.cpp"
 
 static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
 
 // call with: './main -p=/home/philipp/ownCloud/Code/clang/clang-ast/target/SimpleProject /home/philipp/ownCloud/Code/clang/clang-ast/target/SimpleProject/myfunctions.cpp /home/philipp/ownCloud/Code/clang/clang-ast/target/SimpleProject/main.cpp'
 int main(int argc, const char **argv) {
+  psr::helloBugFix();
+  
   clang::tooling::CommonOptionsParser Op(argc, argv, ToolingSampleCategory);
   clang::tooling::ClangTool Tool(Op.getCompilations(), Op.getSourcePathList());
   llvm::outs() << "FILES:\n";
