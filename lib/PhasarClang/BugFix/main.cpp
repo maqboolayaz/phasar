@@ -1,43 +1,19 @@
-#include "clang/Tooling/CommonOptionsParser.h"
-#include "clang/Tooling/Tooling.h"
-#include "llvm/ADT/StringRef.h"
-#include "PhasarFrontendAction.cpp"
-#include "clang/AST/ASTConsumer.h"
-#include "BugFix.h"
-#include "Example.cpp"
 
-static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
+#include <iostream>
+#include <string>
+#include "FixErrorsInClangAST.h"
 
 // call with: './main -p=/home/philipp/ownCloud/Code/clang/clang-ast/target/SimpleProject /home/philipp/ownCloud/Code/clang/clang-ast/target/SimpleProject/myfunctions.cpp /home/philipp/ownCloud/Code/clang/clang-ast/target/SimpleProject/main.cpp'
 int main(int argc, const char **argv) {
-  psr::helloBugFix();
-  
-  clang::tooling::CommonOptionsParser Op(argc, argv, ToolingSampleCategory);
-  clang::tooling::ClangTool Tool(Op.getCompilations(), Op.getSourcePathList());
-  llvm::outs() << "FILES:\n";
-  for (auto &Src : Op.getSourcePathList()) {
-    llvm::outs() << Src << '\n';
-  }
-  llvm::outs() << "\n\n";
 
-/*   BugFix fix{
-    .error_statement = "int x = 42;",
-    .fix_statement = "fix is here",
-    .fix_operation = OPERATION::MODIFY}; */
+  const char* filePath ("/home/ubuntu/Desktop/phasar/lib/PhasarClang/BugFix/target/EvenSimplerProject/main.cpp");
+  std::string error_statment ("int x = 42;");
+  std::string fix_statement ("int x = 92;");
 
-  BugFix fix{
-    .error_statement = "int x = 42;",
-    .fix_statement = "int x = 92;",
-    .fix_operation = OPERATION::ADD};
+  psr::FixErrorsInClangAST fixingInterface;
+  fixingInterface.modifyFixInClangAST(error_statment, fix_statement, filePath);
 
-/*   BugFix fix{
-    .error_statement = "int x = 42;",
-    .fix_operation = OPERATION::DELETE}; */
+  //fixingInterface.deleteFixInClangAST(error_statment, filePath);
 
-  return Tool.run(
-      newFrontendActionWithParams<PhasarFrontendAction>(fix).get());
-
+  //fixingInterface.addFixInClangAST(error_statment, fix_statement, filePath);
 }
-
-
-
