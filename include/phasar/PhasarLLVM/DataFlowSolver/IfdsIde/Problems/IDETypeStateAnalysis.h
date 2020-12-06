@@ -177,6 +177,9 @@ public:
   void emitTextReport(const SolverResults<n_t, d_t, l_t> &SR,
                       std::ostream &OS = std::cout) override;
 
+  void emitErrorReport(const SolverResults<n_t, d_t, l_t> &SR,
+                      std::ostream &OS = std::cout) override;
+
   // customize the edge function composer
   class TSEdgeFunctionComposer : public EdgeFunctionComposer<l_t> {
   private:

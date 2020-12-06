@@ -817,4 +817,74 @@ void IDETypeStateAnalysis::emitTextReport(
   }
 }
 
+void IDETypeStateAnalysis::emitErrorReport(
+    const SolverResults<IDETypeStateAnalysis::n_t, IDETypeStateAnalysis::d_t,
+                        IDETypeStateAnalysis::l_t> &SR,
+    std::ostream &OS) {
+  OS << "\n======= TYPE STATE RESULTS =======\n";
+  for (const auto &F : ICF->getAllFunctions()) {
+    OS << '\n' << getFunctionNameFromIR(F) << '\n';
+    for (const auto &BB : *F) {
+      for (const auto &I : BB) {
+        auto Results = SR.resultsAt(&I, true);
+        if (ICF->isExitStmt(&I)) {
+          OS << "\nAt exit stmt: " << NtoString(&I) << '\n';
+          for (auto Res : Results) {
+            if (const auto *Alloca =
+                    llvm::dyn_cast<llvm::AllocaInst>(Res.first)) {
+              if (Res.second == TSD.error()) {
+                OS << "\n=== ERROR STATE DETECTED ===\nAlloca: "
+                   << DtoString(Res.first) << '\n';
+                for (const auto *Pred : ICF->getPredsOf(&I)) {
+                  OS << "\nPredecessor: " << NtoString(Pred) << '\n';
+                  auto PredResults = SR.resultsAt(Pred, true);
+                  for (auto Res : PredResults) {
+                    if (Res.first == Alloca) {
+                      OS << "Pred State: " << LtoString(Res.second) << '\n';
+                    }
+                  }
+                }
+                OS << "============================\n";
+              } else {
+                OS << "\nAlloca : " << DtoString(Res.first)
+                   << "\nState  : " << LtoString(Res.second) << '\n';
+              }
+            } else {
+              OS << "\nInst: " << NtoString(&I) << endl
+                 << "Fact: " << DtoString(Res.first) << endl
+                 << "State: " << LtoString(Res.second) << endl;
+            }
+          }
+        } else {
+          for (auto Res : Results) {
+            if (const auto *Alloca =
+                    llvm::dyn_cast<llvm::AllocaInst>(Res.first)) {
+              if (Res.second == TSD.error()) {
+                OS << "\n=== ERROR STATE DETECTED ===\nAlloca: "
+                   << DtoString(Res.first) << '\n'
+                   << "\nAt IR Inst: " << NtoString(&I) << '\n';
+                for (const auto *Pred : ICF->getPredsOf(&I)) {
+                  OS << "\nPredecessor: " << NtoString(Pred) << '\n';
+                  auto PredResults = SR.resultsAt(Pred, true);
+                  for (auto Res : PredResults) {
+                    if (Res.first == Alloca) {
+                      OS << "Pred State: " << LtoString(Res.second) << '\n';
+                    }
+                  }
+                }
+                OS << "============================\n";
+              }
+            } else {
+              OS << "\nInst: " << NtoString(&I) << endl
+                 << "Fact: " << DtoString(Res.first) << endl
+                 << "State: " << LtoString(Res.second) << endl;
+            }
+          }
+        }
+      }
+    }
+    OS << "\n--------------------------------------------\n";
+  }
+}
+
 } // namespace psr

@@ -68,6 +68,11 @@ public:
                               std::ostream &OS = std::cout) {
     OS << "No text report available!\n";
   }
+
+  virtual void emitErrorReport(const SolverResults<n_t, d_t, l_t> &SR,
+                              std::ostream &OS = std::cout) {
+    OS << "No error report available!\n";
+  }
 #pragma clang diagnostic pop
 
 #pragma clang diagnostic push

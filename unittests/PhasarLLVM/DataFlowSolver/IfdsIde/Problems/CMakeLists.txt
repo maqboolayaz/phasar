@@ -4,8 +4,10 @@ if(PHASAR_BUILD_OPENSSL_TS_UNITTESTS)
 	IFDSTaintAnalysisTest.cpp
 	IDEInstInteractionAnalysisTest.cpp
 	IDELinearConstantAnalysisTest.cpp
+	IDELinearConstantAnalysisErrorReportTest.cpp
 	IDELinearConstantAnalysis_DotTest.cpp
 	IDETSAnalysisFileIOTest.cpp
+	IDETSAnalysisErrorReportTest.cpp
 	IDETSAnalysisOpenSSLEVPKDFTest.cpp
 	IDETSAnalysisOpenSSLSecureHeapTest.cpp
 	IDETSAnalysisOpenSSLSecureMemoryTest.cpp

@@ -229,6 +229,10 @@ public:
     IDEProblem.emitTextReport(getSolverResults(), OS);
   }
 
+  virtual void emitErrorReport(std::ostream &OS = std::cout) {
+    IDEProblem.emitErrorReport(getSolverResults(), OS);
+  }
+
   virtual void emitGraphicalReport(std::ostream &OS = std::cout) {
     IDEProblem.emitGraphicalReport(getSolverResults(), OS);
   }
