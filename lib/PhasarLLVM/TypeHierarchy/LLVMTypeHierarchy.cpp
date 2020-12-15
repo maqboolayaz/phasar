@@ -96,10 +96,10 @@ std::string
 LLVMTypeHierarchy::removeStructOrClassPrefix(const std::string &TypeName) {
   llvm::StringRef SR(TypeName);
   if (SR.startswith(StructPrefix)) {
-    return SR.drop_front(StructPrefix.size());
+    return SR.ltrim(StructPrefix);
   }
   if (SR.startswith(ClassPrefix)) {
-    return SR.drop_front(ClassPrefix.size());
+    return SR.ltrim(ClassPrefix);
   }
   return TypeName;
 }
@@ -107,10 +107,10 @@ LLVMTypeHierarchy::removeStructOrClassPrefix(const std::string &TypeName) {
 std::string LLVMTypeHierarchy::removeTypeInfoPrefix(std::string VarName) {
   llvm::StringRef SR(VarName);
   if (SR.startswith(TypeInfoPrefixDemang)) {
-    return SR.drop_front(TypeInfoPrefixDemang.size());
+    return SR.ltrim(TypeInfoPrefixDemang);
   }
   if (SR.startswith(TypeInfoPrefix)) {
-    return SR.drop_front(TypeInfoPrefix.size());
+    return SR.ltrim(TypeInfoPrefix);
   }
   return VarName;
 }
@@ -118,10 +118,10 @@ std::string LLVMTypeHierarchy::removeTypeInfoPrefix(std::string VarName) {
 std::string LLVMTypeHierarchy::removeVTablePrefix(std::string VarName) {
   llvm::StringRef SR(VarName);
   if (SR.startswith(VTablePrefixDemang)) {
-    return SR.drop_front(VTablePrefixDemang.size());
+    return SR.ltrim(VTablePrefixDemang);
   }
   if (SR.startswith(VTablePrefix)) {
-    return SR.drop_front(VTablePrefix.size());
+    return SR.ltrim(VTablePrefix);
   }
   return VarName;
 }
@@ -163,34 +163,28 @@ LLVMTypeHierarchy::getSubTypes(const llvm::Module &M,
                                const llvm::StructType &Type) {
   // find corresponding type info variable
   std::vector<const llvm::StructType *> SubTypes;
-  std::string ClearName = removeStructOrClassPrefix(Type);
-  if (const auto *TI = ClearNameTIMap[ClearName]) {
-
-    if (!TI->hasInitializer()) {
-      LOG_IF_ENABLE(BOOST_LOG_SEV(lg::get(), DEBUG)
-                    << ClearName << " does not have initializer");
-      return SubTypes;
-    }
-
-    if (const auto *I =
-            llvm::dyn_cast<llvm::ConstantStruct>(TI->getInitializer())) {
-      for (const auto &Op : I->operands()) {
-        if (auto *CE = llvm::dyn_cast<llvm::ConstantExpr>(Op)) {
-          // caution: getAsInstruction allocates, need to delete later
-          auto *AsI = CE->getAsInstruction();
-          if (auto *BC = llvm::dyn_cast<llvm::BitCastInst>(AsI)) {
-            if (BC->getOperand(0)->hasName()) {
-              auto Name = BC->getOperand(0)->getName();
-              if (Name.find(TypeInfoPrefix) != llvm::StringRef::npos) {
-                auto ClearName = removeTypeInfoPrefix(
-                    boost::core::demangle(Name.str().c_str()));
-                if (const auto *Type = ClearNameTypeMap[ClearName]) {
-                  SubTypes.push_back(Type);
+  if (const auto *TI = ClearNameTIMap[removeStructOrClassPrefix(Type)]) {
+    if (TI->hasInitializer()) {
+      if (const auto *I =
+              llvm::dyn_cast<llvm::ConstantStruct>(TI->getInitializer())) {
+        for (const auto &Op : I->operands()) {
+          if (auto *CE = llvm::dyn_cast<llvm::ConstantExpr>(Op)) {
+            // caution: getAsInstruction allocates, need to delete later
+            auto *AsI = CE->getAsInstruction();
+            if (auto *BC = llvm::dyn_cast<llvm::BitCastInst>(AsI)) {
+              if (BC->getOperand(0)->hasName()) {
+                auto Name = BC->getOperand(0)->getName();
+                if (Name.find(TypeInfoPrefix) != llvm::StringRef::npos) {
+                  auto ClearName = removeTypeInfoPrefix(
+                      boost::core::demangle(Name.str().c_str()));
+                  if (const auto *Type = ClearNameTypeMap[ClearName]) {
+                    SubTypes.push_back(Type);
+                  }
                 }
               }
             }
+            AsI->deleteValue();
           }
-          AsI->deleteValue();
         }
       }
     }
@@ -205,35 +199,25 @@ LLVMTypeHierarchy::getVirtualFunctions(const llvm::Module &M,
   std::vector<const llvm::Function *> VFS;
   if (const auto *TV = ClearNameTVMap[ClearName]) {
     if (const auto *TI = llvm::dyn_cast<llvm::GlobalVariable>(TV)) {
-
-      if (!TI->hasInitializer()) {
-        LOG_IF_ENABLE(BOOST_LOG_SEV(lg::get(), DEBUG)
-                      << ClearName << " does not have initializer");
-        return VFS;
-      }
-
-      if (const auto *I =
-              llvm::dyn_cast<llvm::ConstantStruct>(TI->getInitializer())) {
-        for (const auto &Op : I->operands()) {
-          if (auto *CA = llvm::dyn_cast<llvm::ConstantArray>(Op)) {
-            for (auto &COp : CA->operands()) {
-              if (auto *CE = llvm::dyn_cast<llvm::ConstantExpr>(COp)) {
-                // caution: getAsInstruction allocates, need to delete later
-                auto *AsI = CE->getAsInstruction();
-                if (auto *BC = llvm::dyn_cast<llvm::BitCastInst>(AsI)) {
-                  // if the entry is a GlobalAlias, get its Aliasee
-                  auto *ENTRY = BC->getOperand(0);
-                  while (auto *GA = llvm::dyn_cast<llvm::GlobalAlias>(ENTRY)) {
-                    ENTRY = GA->getAliasee();
-                  }
-
-                  if (ENTRY->hasName()) {
-                    if (auto *F = M.getFunction(ENTRY->getName())) {
-                      VFS.push_back(F);
+      if (TI->hasInitializer()) {
+        if (const auto *I =
+                llvm::dyn_cast<llvm::ConstantStruct>(TI->getInitializer())) {
+          for (const auto &Op : I->operands()) {
+            if (auto *CA = llvm::dyn_cast<llvm::ConstantArray>(Op)) {
+              for (auto &COp : CA->operands()) {
+                if (auto *CE = llvm::dyn_cast<llvm::ConstantExpr>(COp)) {
+                  // caution: getAsInstruction allocates, need to delete later
+                  auto *AsI = CE->getAsInstruction();
+                  if (auto *BC = llvm::dyn_cast<llvm::BitCastInst>(AsI)) {
+                    if (BC->getOperand(0)->hasName()) {
+                      if (auto *F =
+                              M.getFunction(BC->getOperand(0)->getName())) {
+                        VFS.push_back(F);
+                      }
                     }
                   }
+                  AsI->deleteValue();
                 }
-                AsI->deleteValue();
               }
             }
           }
