@@ -828,7 +828,6 @@ void IDETypeStateAnalysis::emitErrorReport(
       for (const auto &I : BB) {
         auto Results = SR.resultsAt(&I, true);
         if (ICF->isExitStmt(&I)) {
-          OS << "\nAt exit stmt: " << NtoString(&I) << '\n';
           for (auto Res : Results) {
             if (const auto *Alloca =
                     llvm::dyn_cast<llvm::AllocaInst>(Res.first)) {
@@ -843,41 +842,18 @@ void IDETypeStateAnalysis::emitErrorReport(
                       OS << "Pred State: " << LtoString(Res.second) << '\n';
                     }
                   }
+
+                  OS << "\n=== ERROR Report Details ===\n";
+                  unsigned Lnr = getLineFromIR(Pred);
+                  std::cout << "\nIR : " << NtoString(Pred) << "\nLNR: " << Lnr << '\n';
+                  std::string SourceCode = getSrcCodeFromIR(Pred);
+                  OS << "\nSrcCode: " << SourceCode << '\n';
+
                 }
                 OS << "============================\n";
               } else {
-                OS << "\nAlloca : " << DtoString(Res.first)
-                   << "\nState  : " << LtoString(Res.second) << '\n';
+                OS << "\n=== NO ERROR Result ===\n";
               }
-            } else {
-              OS << "\nInst: " << NtoString(&I) << endl
-                 << "Fact: " << DtoString(Res.first) << endl
-                 << "State: " << LtoString(Res.second) << endl;
-            }
-          }
-        } else {
-          for (auto Res : Results) {
-            if (const auto *Alloca =
-                    llvm::dyn_cast<llvm::AllocaInst>(Res.first)) {
-              if (Res.second == TSD.error()) {
-                OS << "\n=== ERROR STATE DETECTED ===\nAlloca: "
-                   << DtoString(Res.first) << '\n'
-                   << "\nAt IR Inst: " << NtoString(&I) << '\n';
-                for (const auto *Pred : ICF->getPredsOf(&I)) {
-                  OS << "\nPredecessor: " << NtoString(Pred) << '\n';
-                  auto PredResults = SR.resultsAt(Pred, true);
-                  for (auto Res : PredResults) {
-                    if (Res.first == Alloca) {
-                      OS << "Pred State: " << LtoString(Res.second) << '\n';
-                    }
-                  }
-                }
-                OS << "============================\n";
-              }
-            } else {
-              OS << "\nInst: " << NtoString(&I) << endl
-                 << "Fact: " << DtoString(Res.first) << endl
-                 << "State: " << LtoString(Res.second) << endl;
             }
           }
         }

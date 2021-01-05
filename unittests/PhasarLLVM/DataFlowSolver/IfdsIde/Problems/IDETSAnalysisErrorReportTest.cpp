@@ -24,8 +24,8 @@ using namespace psr;
 TEST(IDETSAnalysisErrorReportTest, HandleTypeState_01) {
     const std::string PathToLlFiles =
       PhasarConfig::getPhasarConfig().PhasarDirectory() +
-      "build/test/llvm_test_code/typestate_analysis_fileio/";
-    ProjectIRDB IRDB ({PathToLlFiles + "typestate_19_c.ll"}, IRDBOptions::WPA);
+      "build/test/llvm_test_code/typestate_analysis_errorreport/";
+    ProjectIRDB IRDB ({PathToLlFiles + "typestate_er_01.ll"}, IRDBOptions::WPA);
     LLVMTypeHierarchy TH (IRDB);
     LLVMPointsToSet PT (IRDB);
     LLVMBasedICFG ICFG (IRDB, CallGraphAnalysisType::OTF, {"main"}, &TH,
