@@ -229,8 +229,8 @@ public:
     IDEProblem.emitTextReport(getSolverResults(), OS);
   }
 
-  virtual void emitErrorReport(std::ostream &OS = std::cout) {
-    IDEProblem.emitErrorReport(getSolverResults(), OS);
+  virtual  std::vector<ErrorDetails> emitErrorReport(std::ostream &OS = std::cout) {
+    return IDEProblem.emitErrorReport(getSolverResults(), OS);
   }
 
   virtual void emitGraphicalReport(std::ostream &OS = std::cout) {

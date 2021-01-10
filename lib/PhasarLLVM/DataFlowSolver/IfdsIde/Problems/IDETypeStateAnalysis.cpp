@@ -817,10 +817,12 @@ void IDETypeStateAnalysis::emitTextReport(
   }
 }
 
-void IDETypeStateAnalysis::emitErrorReport(
+std::vector<ErrorDetails> IDETypeStateAnalysis::emitErrorReport(
     const SolverResults<IDETypeStateAnalysis::n_t, IDETypeStateAnalysis::d_t,
                         IDETypeStateAnalysis::l_t> &SR,
     std::ostream &OS) {
+  
+  std::vector<ErrorDetails> errorsList;
   OS << "\n======= TYPE STATE RESULTS =======\n";
   for (const auto &F : ICF->getAllFunctions()) {
     OS << '\n' << getFunctionNameFromIR(F) << '\n';
@@ -848,7 +850,12 @@ void IDETypeStateAnalysis::emitErrorReport(
                   std::cout << "\nIR : " << NtoString(Pred) << "\nLNR: " << Lnr << '\n';
                   std::string SourceCode = getSrcCodeFromIR(Pred);
                   OS << "\nSrcCode: " << SourceCode << '\n';
+                  ErrorDetails errorDetails;
+                  errorDetails.lineNumber = Lnr;
+                  errorDetails.sourceCode = SourceCode;
+                  errorDetails.codeIR = NtoString(Pred);
 
+                  errorsList.push_back(errorDetails);
                 }
                 OS << "============================\n";
               } else {
@@ -861,6 +868,7 @@ void IDETypeStateAnalysis::emitErrorReport(
     }
     OS << "\n--------------------------------------------\n";
   }
+  return errorsList;
 }
 
 } // namespace psr

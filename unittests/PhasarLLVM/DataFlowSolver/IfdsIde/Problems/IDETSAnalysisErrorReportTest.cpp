@@ -25,7 +25,7 @@ TEST(IDETSAnalysisErrorReportTest, HandleTypeState_01) {
     const std::string PathToLlFiles =
       PhasarConfig::getPhasarConfig().PhasarDirectory() +
       "build/test/llvm_test_code/typestate_analysis_errorreport/";
-    ProjectIRDB IRDB ({PathToLlFiles + "typestate_er_01.ll"}, IRDBOptions::WPA);
+    ProjectIRDB IRDB ({PathToLlFiles + "typestate_er_01_c.ll"}, IRDBOptions::WPA);
     LLVMTypeHierarchy TH (IRDB);
     LLVMPointsToSet PT (IRDB);
     LLVMBasedICFG ICFG (IRDB, CallGraphAnalysisType::OTF, {"main"}, &TH,

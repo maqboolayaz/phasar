@@ -32,6 +32,7 @@ function(add_phasar_unittest test_name)
     phasar_pointer
     phasar_typehierarchy
     phasar_taintapiconfig
+    BugFix
     ${SQLITE3_LIBRARY}
     ${Boost_LIBRARIES}
     ${CMAKE_DL_LIBS}

@@ -6,7 +6,6 @@ if(PHASAR_BUILD_OPENSSL_TS_UNITTESTS)
   message("${OPENSSL_INCLUDE_DIR}")
   include_directories(${OPENSSL_INCLUDE_DIR})
 
-  add_subdirectory(key_derivation)
   add_subdirectory(secure_memory)
   add_subdirectory(secure_heap)
 endif(PHASAR_BUILD_OPENSSL_TS_UNITTESTS)

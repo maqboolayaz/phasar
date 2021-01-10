@@ -21,6 +21,7 @@
 #include "phasar/PhasarLLVM/DataFlowSolver/IfdsIde/IDETabulationProblem.h"
 #include "phasar/PhasarLLVM/DataFlowSolver/IfdsIde/Problems/TypeStateDescriptions/TypeStateDescription.h"
 #include "phasar/PhasarLLVM/Domain/AnalysisDomain.h"
+#include "phasar/PhasarLLVM/DataFlowSolver/IfdsIde/ErrorDetails.h"
 
 namespace llvm {
 class Instruction;
@@ -177,7 +178,7 @@ public:
   void emitTextReport(const SolverResults<n_t, d_t, l_t> &SR,
                       std::ostream &OS = std::cout) override;
 
-  void emitErrorReport(const SolverResults<n_t, d_t, l_t> &SR,
+  std::vector<ErrorDetails> emitErrorReport(const SolverResults<n_t, d_t, l_t> &SR,
                       std::ostream &OS = std::cout) override;
 
   // customize the edge function composer

@@ -2,7 +2,7 @@
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/AST/AST.h"
 #include "PhasarASTVisitor.cpp"
-#include "BugFix.h"
+#include "phasar/PhasarClang/BugFix/BugFix.h"
 
 // Implementation of the ASTConsumer interface for reading an AST produced
 // by the Clang parser.

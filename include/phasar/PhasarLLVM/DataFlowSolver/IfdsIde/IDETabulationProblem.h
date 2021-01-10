@@ -26,6 +26,7 @@
 #include "phasar/PhasarLLVM/DataFlowSolver/IfdsIde/EdgeFunctions.h"
 #include "phasar/PhasarLLVM/DataFlowSolver/IfdsIde/IFDSTabulationProblem.h"
 #include "phasar/PhasarLLVM/DataFlowSolver/IfdsIde/JoinLattice.h"
+#include "phasar/PhasarLLVM/DataFlowSolver/IfdsIde/ErrorDetails.h"
 
 namespace psr {
 
@@ -69,9 +70,10 @@ public:
     OS << "No text report available!\n";
   }
 
-  virtual void emitErrorReport(const SolverResults<n_t, d_t, l_t> &SR,
+  virtual  std::vector<ErrorDetails> emitErrorReport(const SolverResults<n_t, d_t, l_t> &SR,
                               std::ostream &OS = std::cout) {
     OS << "No error report available!\n";
+    return {};
   }
 #pragma clang diagnostic pop
 

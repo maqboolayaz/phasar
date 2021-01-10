@@ -9,8 +9,8 @@
 
 #include <iostream>
 #include <string>
-#include "BugFix.h"
-#include "FixErrorsInClangAST.h"
+#include "phasar/PhasarClang/BugFix/BugFix.h"
+#include "phasar/PhasarClang/BugFix/FixErrorsInClangAST.h"
 #include "clang/Tooling/Tooling.h"
 #include "PhasarFrontendAction.cpp"
 #include "clang/Tooling/CommonOptionsParser.h"

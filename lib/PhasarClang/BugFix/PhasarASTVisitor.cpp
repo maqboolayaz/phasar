@@ -14,7 +14,7 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/raw_ostream.h"
-#include "BugFix.h"
+#include "phasar/PhasarClang/BugFix/BugFix.h"
 
 
 // By implementing RecursiveASTVisitor, we can specify which AST nodes

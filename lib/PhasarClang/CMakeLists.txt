@@ -36,3 +36,6 @@ set_target_properties(phasar_clang
   LINKER_LANGUAGE CXX
   PREFIX "lib"
 )
+
+
+add_subdirectory(BugFix)

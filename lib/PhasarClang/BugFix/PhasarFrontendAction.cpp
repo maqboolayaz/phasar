@@ -7,7 +7,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
-#include "BugFix.h"
+#include "phasar/PhasarClang/BugFix/BugFix.h"
 
 // For each source file provided to the tool, a new FrontendAction is created.
 class PhasarFrontendAction : public clang::ASTFrontendAction {
