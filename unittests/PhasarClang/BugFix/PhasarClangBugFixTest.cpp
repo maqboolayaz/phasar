@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include "phasar/PhasarClang/BugFix/FixErrorsInClangAST.h"
+#include "phasar/Config/Configuration.h"
 
 #include "gtest/gtest.h"
 
@@ -17,17 +18,43 @@ using namespace psr;
 
 
 TEST(PhasarClangBugFixTest, HandleBugFix_01) {
+// Testing the add AST functionality of PhasarClang Interface
 
-  const char* filePath ("/home/ayaz/Desktop/phasar/lib/PhasarClang/BugFix/target/EvenSimplerProject/test.cpp");
+  const std::string filePath =
+    PhasarConfig::getPhasarConfig().PhasarDirectory() + 
+    "lib/PhasarClang/BugFix/target/bugfix_01.cpp";
   std::string error_statment ("int x = 42;");
   std::string fix_statement ("int x = 92;");
 
   psr::FixErrorsInClangAST fixingInterface;
-  fixingInterface.modifyFixInClangAST(error_statment, fix_statement, filePath);
 
-  //fixingInterface.deleteFixInClangAST(error_statment, filePath);
+  fixingInterface.addFixInClangAST(error_statment, fix_statement, filePath.c_str());
+}
 
-  //fixingInterface.addFixInClangAST(error_statment, fix_statement, filePath);
+TEST(PhasarClangBugFixTest, HandleBugFix_02) {
+  // Testing the delete AST functionality of PhasarClang Interface
+
+  const std::string filePath =
+    PhasarConfig::getPhasarConfig().PhasarDirectory() + 
+    "lib/PhasarClang/BugFix/target/bugfix_02.cpp";
+  std::string error_statment ("fclose(f);");
+
+  psr::FixErrorsInClangAST fixingInterface;
+
+  fixingInterface.deleteFixInClangAST(error_statment, filePath.c_str());
+}
+
+TEST(PhasarClangBugFixTest, HandleBugFix_03) {
+  // Testing the modify AST functionality of PhasarClang Interface
+
+  const std::string filePath =
+    PhasarConfig::getPhasarConfig().PhasarDirectory() + 
+    "lib/PhasarClang/BugFix/target/bugfix_03.cpp";
+  std::string error_statment ("fclose(f);");
+  std::string fix_statement ("//fclose(f);");
+
+  psr::FixErrorsInClangAST fixingInterface;
+  //fixingInterface.modifyFixInClangAST(error_statment, fix_statement, filePath.c_str());
 }
 
 // main function for the test case

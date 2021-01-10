@@ -1,5 +1,5 @@
 
-int main() {
+int func1() {
   int x = 42;
   int y = 13;
   if (y > 0) {
